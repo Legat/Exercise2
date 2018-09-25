@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Exercise2</string>
+
+    <string name="person_name">\u0020\u0020\u0020\u0020\u0020Shnepelev Peter</string>
+    <string name="hint">Enter a message</string>
+    <string name="message">Send message</string>
+    <string name="analyst">Sport analyst</string>
+    <string name="telran">\u0020Colleage Tel-Ran</string>
+    <string name="android">\u0020Android developer</string>
+    <string name="footbal">\u0020Football analyst</string>
+    <string name="disclaimer">© 2018 Shnepelev Peter</string>
+    <string name="executing">You haven not suitable app for executing</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="name_size">16sp</dimen>
+    <dimen name="name_butom">7dp</dimen>
+    <dimen name="central">0dp</dimen>
+    <dimen name="textkey">16sp</dimen>
+    <dimen name="Allmargins">16dp</dimen>
+</resources>
