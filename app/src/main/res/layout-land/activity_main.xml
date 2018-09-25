@@ -41,7 +41,7 @@
                 android:layout_marginLeft="39dp">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="28dp"
+                    android:layout_height="@dimen/lines"
                     android:drawableLeft="@drawable/telran"
                     android:layout_marginTop="16dp"
                     android:gravity="center"
@@ -51,7 +51,7 @@
                     />
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="28dp"
+                    android:layout_height="@dimen/lines"
                     android:layout_marginTop="8dp"
                     android:drawableLeft="@drawable/ic_action_android"
                     android:gravity="center"
@@ -63,7 +63,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="28dp"
+                    android:layout_height="@dimen/lines"
                     android:drawableLeft="@drawable/ball"
                     android:gravity="center"
                     android:layout_marginTop="16dp"

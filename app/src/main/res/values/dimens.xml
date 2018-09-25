@@ -5,4 +5,5 @@
     <dimen name="central">0dp</dimen>
     <dimen name="textkey">16sp</dimen>
     <dimen name="Allmargins">16dp</dimen>
+    <dimen name="lines">28dp</dimen>
 </resources>
