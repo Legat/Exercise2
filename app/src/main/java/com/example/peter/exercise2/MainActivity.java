@@ -1,5 +1,6 @@
 package com.example.peter.exercise2;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -33,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sendMessage();
             }
         });
+
+        InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        keyboard.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
         faceBtn = findViewById(R.id.face_btn);
         telBtn = findViewById(R.id.teleg_btn);
