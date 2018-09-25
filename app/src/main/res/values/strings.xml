@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Exercise2</string>
-
     <string name="person_name">\u0020\u0020\u0020\u0020\u0020Shnepelev Peter</string>
     <string name="hint">Enter a message</string>
     <string name="message">Send message</string>
@@ -10,4 +9,5 @@
     <string name="footbal">\u0020Football analyst</string>
     <string name="disclaimer">© 2018 Shnepelev Peter</string>
     <string name="executing">You haven not suitable app for executing</string>
+    <string name="describtion">Peter started his career as 1S Enterprise developer in 2011. Over time he changed field of activity to analysis and worked some years in business analysis. In 2017 began studying android development in colleage Tel-Ran.</string>
 </resources>

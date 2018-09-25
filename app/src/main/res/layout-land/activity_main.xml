@@ -76,8 +76,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Peter started his career as 1S Enterprise developer in 2011. Over time he changed field of activity to analysis and worked some years in business analysis. In 2017 began studiing android developmen in colleage Tel-Ran."
-                    android:textSize="11sp"
+                    android:text="@string/describtion"
+                    android:textSize="14sp"
 
                     />
 
