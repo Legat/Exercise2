@@ -36,9 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        keyboard.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-
+       /// code revew
         faceBtn = findViewById(R.id.face_btn);
         telBtn = findViewById(R.id.teleg_btn);
         vkBtn = findViewById(R.id.vk_btn);
