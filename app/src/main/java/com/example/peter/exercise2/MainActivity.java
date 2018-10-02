@@ -17,6 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String FACE_BOOK = "https://www.facebook.com/peter.shnepelev";
+    private static final String VK_COM = "https://vk.com/patricul";
+    private static final String TELEGRAM = "https://web.telegram.org/#/im?p=@Patricul";
 
     private Button sendBtn;
     private ImageButton faceBtn, telBtn, vkBtn;
@@ -29,15 +32,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         messageEdit = findViewById(R.id.message_edit);
 
         sendBtn = findViewById(R.id.send_btn);
-        sendBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage();
-            }
-        });
+        sendBtn.setOnClickListener(this);
+//            @Override
+//            public void onClick(View view) {
+//                sendMessage();
+//            }
+//        });
 
-        InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        keyboard.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+//        InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        keyboard.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
         faceBtn = findViewById(R.id.face_btn);
         telBtn = findViewById(R.id.teleg_btn);
@@ -46,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         faceBtn.setOnClickListener(this);
         telBtn.setOnClickListener(this);
         vkBtn.setOnClickListener(this);
+
 
         conainer = findViewById(R.id.info_container);
         TextView disclaimer = new TextView(this);
@@ -58,9 +62,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        final String FACE_BOOK = "https://www.facebook.com/peter.shnepelev";
-        final String VK_COM = "https://vk.com/patricul";
-        final String TELEGRAM = "https://web.telegram.org/#/im?p=@Patricul";
 
         switch (view.getId()){
             case R.id.face_btn:
@@ -71,6 +72,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.vk_btn:
                 networks(VK_COM);
+                break;
+            case R.id.send_btn:
+                sendMessage();
                 break;
         }
     }
