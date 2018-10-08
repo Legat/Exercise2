@@ -14,8 +14,10 @@ public class VerticalSpaceItemDecoration extends ItemDecoration {
     }
 
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
-        outRect.bottom = this.verticalSpaceHeight;
-        if (parent.getChildAdapterPosition(view) != parent.getAdapter().getItemCount() - 1) {
+        outRect.top = this.verticalSpaceHeight;
+        outRect.right = this.verticalSpaceHeight;
+        outRect.left = this.verticalSpaceHeight;
+        if (parent.getChildAdapterPosition(view) == parent.getAdapter().getItemCount() - 1) {
             outRect.bottom = this.verticalSpaceHeight;
         }
     }
