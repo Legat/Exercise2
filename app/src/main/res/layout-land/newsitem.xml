@@ -2,20 +2,22 @@
 <android.support.v7.widget.CardView
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="320dp"
+    tools:layout_width="320dp"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
+    tools:layout_height="wrap_content"
     card_view:cardBackgroundColor="@color/cardColor"
     card_view:cardCornerRadius="4dp"
     card_view:cardElevation="2dp"
     card_view:cardPreventCornerOverlap="true"
     card_view:cardUseCompatPadding="true"
     card_view:contentPadding="3dp"
-    android:id="@+id/cardplace"
-   >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardplace">
+
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <TextView
             android:id="@+id/category"
@@ -28,26 +30,28 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margins">
+            android:layout_marginTop="@dimen/margins"
+            >
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.9">
+                android:layout_weight="2"
+                >
                 <TextView
                     android:textStyle="bold"
                     android:id="@+id/tittle"
                     android:textIsSelectable="true"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/titilesize"
+                    android:textSize="14sp"
                     tools:text="Tourist filmed sitting on 5m-long crocodile"
                     android:layout_marginBottom="@dimen/margins"
                     android:lines="2" />
 
                  <TextView
                     android:id="@+id/previwnews"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/previewsize"
                     android:textIsSelectable="true"
@@ -55,14 +59,19 @@
                     android:layout_marginBottom="@dimen/margins"
                     android:lines="4" />
             </LinearLayout>
-            <ImageView
-                android:id="@+id/image_news"
-                android:layout_width="0dp"
-                android:contentDescription="@string/descimage"
-                android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/margins"
-                tools:background="@mipmap/ic_launcher"
-                android:layout_weight="1.1" />
+
+                 <ImageView
+                     android:id="@+id/image_news"
+                     android:layout_width="0dp"
+                     android:layout_height="match_parent"
+                     android:layout_weight="1"
+                     android:scaleType="centerCrop"
+                     android:adjustViewBounds="true"
+                     android:layout_marginStart="@dimen/margins"
+                     android:contentDescription="@string/descimage"
+                     tools:background="@mipmap/ic_launcher" />
+
+
         </LinearLayout>
         <TextView
             android:textStyle="italic"

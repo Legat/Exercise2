@@ -1,8 +1,9 @@
 package com.example.peter.exercise2.Models;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class NewsItem {
+public class NewsItem implements Serializable {
     private final Category category;
     private final String fullText;
     private final String imageUrl;

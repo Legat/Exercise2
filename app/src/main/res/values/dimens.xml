@@ -6,4 +6,10 @@
     <dimen name="textkey">16sp</dimen>
     <dimen name="Allmargins">16dp</dimen>
     <dimen name="lines">28dp</dimen>
+    //////////////////////////////////////////
+    <dimen name="titilesize">15sp</dimen>
+    <dimen name="previewsize">11sp</dimen>
+    <dimen name="margins">5dp</dimen>
+    //////////////////////////////////////////
+    <dimen name="marginsdetail">22sp</dimen>
 </resources>

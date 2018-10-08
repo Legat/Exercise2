@@ -16,8 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
+public class AboutActivity extends AppCompatActivity implements View.OnClickListener {
+   private static final String FACE_BOOK = "https://www.facebook.com/peter.shnepelev";
+   private static final String VK_COM = "https://vk.com/patricul";
+   private static final String TELEGRAM = "https://web.telegram.org/#/im?p=@Patricul";
     private Button sendBtn;
     private ImageButton faceBtn, telBtn, vkBtn;
     private EditText messageEdit;
@@ -29,12 +31,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         messageEdit = findViewById(R.id.message_edit);
 
         sendBtn = findViewById(R.id.send_btn);
-        sendBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage();
-            }
-        });
+        sendBtn.setOnClickListener(this);
+//            @Override
+//            public void onClick(View view) {
+//                sendMessage();
+//            }
+//        });
 
        /// code revew
         faceBtn = findViewById(R.id.face_btn);
@@ -56,9 +58,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        final String FACE_BOOK = "https://www.facebook.com/peter.shnepelev";
-        final String VK_COM = "https://vk.com/patricul";
-        final String TELEGRAM = "https://web.telegram.org/#/im?p=@Patricul";
 
         switch (view.getId()){
             case R.id.face_btn:
@@ -70,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.vk_btn:
                 networks(VK_COM);
                 break;
+            case R.id.send_btn:
+                sendMessage();
         }
     }
     private void networks(String reference){
@@ -96,6 +97,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(checkIntent(intent))
             startActivity(intent);
         else
-            Toast.makeText(this, R.string.executing, Toast.LENGTH_LONG);
+            Toast.makeText(this, R.string.executing, Toast.LENGTH_LONG).show();
     }
 }
