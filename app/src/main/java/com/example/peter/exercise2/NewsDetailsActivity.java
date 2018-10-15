@@ -24,7 +24,7 @@ public class NewsDetailsActivity extends AppCompatActivity {
         imageNews = findViewById(R.id.image_new);
 
         NewsItem news = (NewsItem) getIntent().getSerializableExtra(NewsItem.class.getSimpleName());
-        setTitle(news.getCategory().getName());
+       // setTitle(news.getCategory().getName());
         title.setText(news.getTitle());
         datetext.setText(news.getPublishDate().toString());
         fulltext.setText(news.getFullText());
