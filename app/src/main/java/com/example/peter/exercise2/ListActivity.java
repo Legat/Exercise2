@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.peter.exercise2.Adapters.NewsAdapter;
 import com.example.peter.exercise2.Adapters.VerticalSpaceItemDecoration;
@@ -36,7 +37,7 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
     private FrameLayout frame;
     private Handler handler;
     private NewsThread newsTread;
-
+    private TextView progresstxt;
 
 
     @Override
@@ -71,17 +72,16 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
                 recyclerView = findViewById(R.id.list_news);
                 adapter = new NewsAdapter(getApplicationContext(), listnews);
                 if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-                    gridLayoutManager = new GridLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
-                    recyclerView.setLayoutManager(gridLayoutManager);
+                    gridManager();
                 } else{
-                    linearLayoutManager = new LinearLayoutManager(this);
-                    recyclerView.setLayoutManager(linearLayoutManager);
-
+                    linearManager();
                 }
                 recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_STATE_ITEM ));
                 recyclerView.setItemAnimator(new DefaultItemAnimator());
                 recyclerView.setAdapter(adapter);
                 break;
+            case 3:
+                progresstxt.setText(String.valueOf(message.arg1));
         }
 
         return false;
@@ -91,12 +91,20 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
-            gridLayoutManager = new GridLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
-            recyclerView.setLayoutManager(gridLayoutManager);
+            gridManager();
         } else if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            linearLayoutManager = new LinearLayoutManager(this);
-            recyclerView.setLayoutManager(linearLayoutManager);
+            linearManager();
         }
+    }
+
+    private void linearManager(){
+        linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+    }
+
+    private void gridManager(){
+        gridLayoutManager = new GridLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
+        recyclerView.setLayoutManager(gridLayoutManager);
     }
 
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
@@ -120,14 +128,19 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER;
         progressBar.setLayoutParams(params);
+        progresstxt = new TextView(this);
+        progresstxt.setText(String.valueOf(3));
+        progresstxt.setLayoutParams(params);
         frame.addView(progressBar);
+        frame.addView(progresstxt);
         return frame;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        newsTread.stoping();
+      //  newsTread.stoping();
+        newsTread.isInterrupted();
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -135,7 +148,7 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
 
     private class NewsThread extends Thread{
         private Handler handler;
-        private volatile boolean isRuning = true;
+      //  private volatile boolean isRuning = true;
         private NewsThread(Handler handler){
             this.handler = handler;
         }
@@ -143,21 +156,27 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
     @Override
     public void run() {
         super.run();
-        if(isRuning) {
+        int count = 2;
+        if(!isInterrupted()) {
             handler.sendEmptyMessage(1);
-
-            try {
-                sleep(2000);
-                listnews = DataUtils.generateNews();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            listnews = DataUtils.generateNews();
+          while (count >= 0 && !isInterrupted()) {
+              try {
+                  sleep( 500);
+                  Message msg = handler.obtainMessage(3);
+                  msg.arg1 = count;
+                  handler.sendMessage(msg);
+                  count--;
+              } catch (InterruptedException e) {
+                  e.printStackTrace();
+              }
+          }
             handler.sendEmptyMessage(2);
         }
     }
-    private void stoping(){
-            isRuning = false;
-    }
+  //  private void stoping(){
+      //      isRuning = false;
+   // }
 
 }
 
