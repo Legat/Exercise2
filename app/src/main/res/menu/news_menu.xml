@@ -6,4 +6,9 @@
         android:id="@+id/about"
         android:title="@string/menutitle"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/filter"
+          android:icon="@drawable/ic_filter"
+          android:title="filter"
+          app:showAsAction="ifRoom|withText"/>
+
 </menu>

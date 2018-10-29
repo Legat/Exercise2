@@ -6,8 +6,6 @@ import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.Adapter;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import com.example.peter.exercise2.Models.NewsItem;
+import com.example.peter.exercise2.Models.Result;
 import com.example.peter.exercise2.NewsDetailsActivity;
 import com.example.peter.exercise2.R;
 
@@ -29,12 +26,14 @@ import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
     private Context context;
-    private List<NewsItem> newsList;
+    private String multimediaUrl;
+    private int screenWidth;
+    private List<Result> resList;
 
-
-    public NewsAdapter(Context context, List<NewsItem> newsList) {
+    public NewsAdapter(Context context, List<Result> resList, int screenWidth) {
         this.context = context;
-        this.newsList = newsList;
+        this.resList = resList;
+        this.screenWidth = screenWidth;
     }
 
 
@@ -46,22 +45,32 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
     }
 
     public void onBindViewHolder(@NonNull final NewsHolder holder, int position) {
-        final NewsItem news = newsList.get(position);
+        final Result news = resList.get(position);
         if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
             holder.cardplace.setLayoutParams(new LinearLayout.LayoutParams(screenSize(), LinearLayout.LayoutParams.WRAP_CONTENT));
         } else if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             holder.cardplace.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         }
-        holder.categorytxt.setText(news.getCategory().getName());
+        if(news.getSubsection() != null && news.getSubsection() != ""){
+            holder.categorytxt.setText(news.getSubsection());
+        } else {
+            holder.categorytxt.setVisibility(View.GONE);
+        }
         holder.titletxt.setText(news.getTitle());
-        holder.previewtxt.setText(news.getPreviewText());
-        holder.datetxt.setText(news.getPublishDate().toString());
+        holder.previewtxt.setText(news.getAbstract());
+        holder.datetxt.setText(news.getPublishedDate());
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.placeholder(R.drawable.ic_action_holder);
       //  requestOptions.centerCrop();
-        Glide.with(context).setDefaultRequestOptions(requestOptions)
-                .load(news.getImageUrl())
-                .into(holder.imageNews);
+        if(!news.getMultimedia().isEmpty()){
+            multimediaUrl = news.getMultimedia().get(3).getUrl();
+            Glide.with(context).setDefaultRequestOptions(requestOptions)
+                    .load(multimediaUrl)
+                    .into(holder.imageNews);
+        } else{
+            holder.imageNews.setBackgroundResource(R.drawable.ic_action_holder);
+        }
+
         holder.cardplace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,7 +78,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
             //  Toast.makeText(context, name, Toast.LENGTH_SHORT).show();
               Intent intent = new Intent(context, NewsDetailsActivity.class);
               intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-              intent.putExtra(NewsItem.class.getSimpleName(), news);
+              intent.putExtra(Result.class.getSimpleName(), news.getUrl());
+              intent.putExtra(Result.class.getName(), multimediaUrl);
               //context.startActivity(intent);
               context.getApplicationContext().startActivity(intent);
             }
@@ -77,7 +87,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
     }
 
     public int getItemCount() {
-        return newsList.size();
+        return resList.size();
     }
 
 

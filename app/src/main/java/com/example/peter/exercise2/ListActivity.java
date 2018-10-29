@@ -6,6 +6,8 @@ import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -17,41 +19,141 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.example.peter.exercise2.Adapters.NewsAdapter;
 import com.example.peter.exercise2.Adapters.VerticalSpaceItemDecoration;
-import com.example.peter.exercise2.Models.NewsItem;
+import com.example.peter.exercise2.Models.News;
+import com.example.peter.exercise2.Models.Result;
+import com.example.peter.exercise2.Providers.ApiService;
+import com.example.peter.exercise2.Providers.RetrofitClient;
 
+import java.io.IOException;
 import java.util.List;
 
+import retrofit2.Call;
+
 public class ListActivity extends AppCompatActivity implements Handler.Callback {
-    public static final int VERTICAL_STATE_ITEM = 4;
+    private static final int VERTICAL_STATE_ITEM = 4;
+    private static final String API_KEY = "d94b328606074836a7618073303334da";
     private GridLayoutManager gridLayoutManager;
     private NewsAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
-    private List<NewsItem> listnews;
+  //  private List<NewsItem> listnews;
+    private List<Result> listresult;
+    private News newsItem;
     private RecyclerView recyclerView;
     private FrameLayout frame;
     private Handler handler;
     private NewsThread newsTread;
-    private TextView progresstxt;
 
-
+    private String param;
+    private RadioButton radioButton;
+    private AlertDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        handler = new Handler(this);
-        newsTread = new NewsThread(handler);
-      //  if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT || getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-            if (!newsTread.isAlive()){
-                newsTread.start();
-            }
-     //   }
 
+        if(param == null || param == ""){
+            param = "home.json";
+            setTitle("New York Times");
+        }
+
+        handler = new Handler(this);
+        newsTread = new NewsThread(handler, param);
+
+          //  if (!newsTread.isAlive()){
+                newsTread.start();
+         //   }
+
+        String[] selection = getResources().getStringArray(R.array.array_sections);
+        float dp =  getResources().getDisplayMetrics().density;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        RadioGroup radioGroup = new RadioGroup(this);
+        radioGroup.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams lineraParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        lineraParams.gravity = Gravity.CENTER_HORIZONTAL;
+        radioGroup.setLayoutParams(lineraParams);
+        scroll.addView(radioGroup);
+
+        for(int i = 0; i< selection.length; i++){
+            radioButton = new RadioButton(this);
+            LinearLayout.LayoutParams checkParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            radioButton.setLayoutParams(checkParams);
+            radioButton.setText(selection[i].toString());
+            radioButton.setPadding((int) (10*dp),0,0,0);
+            radioButton.setTextSize(6 * getResources().getDisplayMetrics().density);
+            radioGroup.addView(radioButton);
+
+            radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    String title = compoundButton.getText().toString();
+                    ActionBar ab = getSupportActionBar();
+                    ab.setSubtitle(title);
+                    Toast.makeText(ListActivity.this,title,Toast.LENGTH_LONG).show();
+                    param = compoundButton.getText().toString() + ".json";
+                    dialog.dismiss();
+                    invalidateOptionsMenu();
+
+                    newsTread = new NewsThread(handler, param);
+                    newsTread.start();
+
+
+                }
+            });
+        }
+
+
+        builder.setView(scroll);
+
+        dialog = builder.create();
+
+    //    linearManager();
+
+      //  ApiService api = RetrofitClient.getApiService();
+     //   Call<News> news = api.getItemNews(API_KEY);
+//        try {
+//            ApiService api = RetrofitClient.getApiService();
+//            Call<News> news = api.getItemNews(API_KEY);
+//            newsItem = news.execute().body();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        news.enqueue(new Callback<News>() {
+//            @Override
+//            public void onResponse(Call<News> call, Response<News> response) {
+//                if(response.isSuccessful()){
+//                    newsItem = response.body();
+//                    Toast.makeText(ListActivity.this,"success" + newsItem.getResults().size(), Toast.LENGTH_LONG).show();
+//                    listresult = newsItem.getResults();
+//                } else{
+//                    Log.d("MY_TAG", "response code" + response.errorBody().toString());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<News> call, Throwable t) {
+//                Log.d("MY_TAG", "failure " + t);
+//                Toast.makeText(ListActivity.this,"quantity "+ t.toString(), Toast.LENGTH_LONG).show();
+//            }
+//        });
+
+//        listresult.size();
+       //  newsItem.getResults();
     }
+
+
 
     @Override
     public boolean handleMessage(Message message) {
@@ -67,21 +169,26 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
 
                 break;
             case 2:
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                 setContentView(R.layout.activity_list);
                 recyclerView = findViewById(R.id.list_news);
-                adapter = new NewsAdapter(getApplicationContext(), listnews);
+
+
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                 if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
                     gridManager();
                 } else{
                     linearManager();
                 }
+                adapter = new NewsAdapter(getApplicationContext(), listresult, screenSize());
                 recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_STATE_ITEM ));
                 recyclerView.setItemAnimator(new DefaultItemAnimator());
                 recyclerView.setAdapter(adapter);
+
+
+
                 break;
-            case 3:
-                progresstxt.setText(String.valueOf(message.arg1));
+//            case 3:
+//                progresstxt.setText(String.valueOf(message.arg1));
         }
 
         return false;
@@ -113,11 +220,28 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() != R.id.about) {
-            return super.onOptionsItemSelected(item);
+
+        if(item.getItemId() == R.id.about) {
+            startActivity(new Intent(this, AboutActivity.class));
+            return true;
+        } else if(item.getItemId() == R.id.filter){
+         //   Toast.makeText(this, "Try",Toast.LENGTH_SHORT).show();
+
+//            if(item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.ic_filter).getConstantState())){
+//             item.setIcon(R.drawable.ic_filter_remove);
+//            } else {
+//                item.setIcon(R.drawable.ic_filter);
+//            }
+
+            dialog.show();
+
+
+
+
+
+            return true;
         }
-        startActivity(new Intent(this, AboutActivity.class));
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     private FrameLayout ProgressLay(){
@@ -128,11 +252,11 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER;
         progressBar.setLayoutParams(params);
-        progresstxt = new TextView(this);
-        progresstxt.setText(String.valueOf(3));
-        progresstxt.setLayoutParams(params);
+//        progresstxt = new TextView(this);
+//        progresstxt.setText(String.valueOf(3));
+//        progresstxt.setLayoutParams(params);
         frame.addView(progressBar);
-        frame.addView(progresstxt);
+ //       frame.addView(progresstxt);
         return frame;
     }
 
@@ -148,37 +272,52 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
 
     private class NewsThread extends Thread{
         private Handler handler;
+        private String arg;
       //  private volatile boolean isRuning = true;
-        private NewsThread(Handler handler){
+        private NewsThread(Handler handler, String arg){
             this.handler = handler;
+            this.arg = arg;
         }
 
     @Override
     public void run() {
         super.run();
-        int count = 2;
+
         if(!isInterrupted()) {
             handler.sendEmptyMessage(1);
-            listnews = DataUtils.generateNews();
-          while (count >= 0 && !isInterrupted()) {
-              try {
-                  sleep( 500);
-                  Message msg = handler.obtainMessage(3);
-                  msg.arg1 = count;
-                  handler.sendMessage(msg);
-                  count--;
-              } catch (InterruptedException e) {
-                  e.printStackTrace();
-              }
-          }
+
+
+            ApiService api = RetrofitClient.getApiService();
+            Call<News> news = api.getItemNews(arg, API_KEY);
+            try {
+                newsItem = news.execute().body();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            listresult = newsItem.getResults();
+//            while (count >= 0 && !isInterrupted()) {
+//              try {
+//                  sleep( 500);
+//                  Message msg = handler.obtainMessage(3);
+//                  msg.arg1 = count;
+//                  handler.sendMessage(msg);
+//                  count--;
+//              } catch (InterruptedException e) {
+//                  e.printStackTrace();
+//              }
+     //     }
             handler.sendEmptyMessage(2);
         }
     }
-  //  private void stoping(){
-      //      isRuning = false;
-   // }
 
 }
+
+    private int screenSize(){
+        DisplayMetrics metrix = this.getResources().getDisplayMetrics();
+        int width = metrix.widthPixels/2;
+        return width;
+    }
+
 
 //    private float size(){
 //       // float density = getResources().getDisplayMetrics().density;
