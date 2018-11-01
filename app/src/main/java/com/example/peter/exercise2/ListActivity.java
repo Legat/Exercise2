@@ -53,7 +53,7 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
     private FrameLayout frame;
     private Handler handler;
     private NewsThread newsTread;
-
+    private NewsThread secondThread;
     private String param;
     private RadioButton radioButton;
     private AlertDialog dialog;
@@ -73,51 +73,7 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
                 newsTread.start();
          //   }
 
-        String[] selection = getResources().getStringArray(R.array.array_sections);
-        float dp =  getResources().getDisplayMetrics().density;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        ScrollView scroll = new ScrollView(this);
-        scroll.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        RadioGroup radioGroup = new RadioGroup(this);
-        radioGroup.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams lineraParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.MATCH_PARENT);
-        lineraParams.gravity = Gravity.CENTER_HORIZONTAL;
-        radioGroup.setLayoutParams(lineraParams);
-        scroll.addView(radioGroup);
-
-        for(int i = 0; i< selection.length; i++){
-            radioButton = new RadioButton(this);
-            LinearLayout.LayoutParams checkParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            radioButton.setLayoutParams(checkParams);
-            radioButton.setText(selection[i].toString());
-            radioButton.setPadding((int) (10*dp),0,0,0);
-            radioButton.setTextSize(6 * getResources().getDisplayMetrics().density);
-            radioGroup.addView(radioButton);
-
-            radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    String title = compoundButton.getText().toString();
-                    ActionBar ab = getSupportActionBar();
-                    ab.setSubtitle(title);
-                    Toast.makeText(ListActivity.this,title,Toast.LENGTH_LONG).show();
-                    param = compoundButton.getText().toString() + ".json";
-                    dialog.dismiss();
-                    invalidateOptionsMenu();
-
-                    newsTread = new NewsThread(handler, param);
-                    newsTread.start();
-
-
-                }
-            });
-        }
-
-
-        builder.setView(scroll);
-
-        dialog = builder.create();
 
     //    linearManager();
 
@@ -183,7 +139,13 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
                 recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_STATE_ITEM ));
                 recyclerView.setItemAnimator(new DefaultItemAnimator());
                 recyclerView.setAdapter(adapter);
-
+//                if(secondThread != null) {
+//                    secondThread.isInterrupted();
+//                    newsTread.isInterrupted();
+////                    if(!secondThread.isAlive()){
+////                        Toast.makeText(this, "Threads is not alive", Toast.LENGTH_LONG).show();
+////                    }
+//                }
 
 
                 break;
@@ -232,7 +194,50 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
 //            } else {
 //                item.setIcon(R.drawable.ic_filter);
 //            }
+            String[] selection = getResources().getStringArray(R.array.array_sections);
+            float dp =  getResources().getDisplayMetrics().density;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
+            ScrollView scroll = new ScrollView(this);
+            scroll.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            RadioGroup radioGroup = new RadioGroup(this);
+            radioGroup.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams lineraParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.MATCH_PARENT);
+            lineraParams.gravity = Gravity.CENTER_HORIZONTAL;
+            radioGroup.setLayoutParams(lineraParams);
+            scroll.addView(radioGroup);
+
+            for(int i = 0; i< selection.length; i++){
+                radioButton = new RadioButton(this);
+                LinearLayout.LayoutParams checkParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                radioButton.setLayoutParams(checkParams);
+                radioButton.setText(selection[i].toString());
+                radioButton.setPadding((int) (10*dp),0,0,0);
+                radioButton.setTextSize(6 * getResources().getDisplayMetrics().density);
+                radioGroup.addView(radioButton);
+
+                radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        String title = compoundButton.getText().toString();
+                        ActionBar ab = getSupportActionBar();
+                        ab.setSubtitle(title);
+                        param = compoundButton.getText().toString() + ".json";
+                        dialog.dismiss();
+                        invalidateOptionsMenu();
+
+                        secondThread = new NewsThread(handler, param);
+                        secondThread.start();
+
+
+                    }
+                });
+            }
+
+
+            builder.setView(scroll);
+
+            dialog = builder.create();
             dialog.show();
 
 
@@ -265,6 +270,7 @@ public class ListActivity extends AppCompatActivity implements Handler.Callback 
         super.onStop();
       //  newsTread.stoping();
         newsTread.isInterrupted();
+        secondThread.isInterrupted();
         handler.removeCallbacksAndMessages(null);
     }
 
