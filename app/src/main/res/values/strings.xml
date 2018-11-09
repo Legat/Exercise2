@@ -13,7 +13,7 @@
     //////////////////////////////////////////////
     <string name="menutitle">about me</string>
     <string name="descimage">image</string>
-
+    <string name="internet">Internet connection not available</string>
     <string-array name="array_sections">
         <item>home</item>
         <item>opinion</item>
@@ -42,6 +42,10 @@
         <item>obituaries</item>
         <item>insider</item>
     </string-array>
+//////////////////////////////////////////////////
+    <string name="save">save</string>
+    <string name="edit">edit</string>
+    <string name="delete">delete</string>
 </resources>
 
 

@@ -7,27 +7,28 @@
     android:background="@android:color/background_light"
     android:fitsSystemWindows="true">
 
-   <!--<android.support.design.widget.AppBarLayout-->
-       <!--android:id="@+id/main.appbar"-->
-       <!--android:layout_width="match_parent"-->
-       <!--android:layout_height="300dp"-->
-       <!--android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"-->
-       <!--android:fitsSystemWindows="true"-->
-       <!--&gt;-->
+   <android.support.design.widget.AppBarLayout
+       android:id="@+id/main.appbar"
+       android:layout_width="match_parent"
+       android:layout_height="300dp"
+       android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+       android:fitsSystemWindows="true"
+       >
 
-      <!--<android.support.design.widget.CollapsingToolbarLayout-->
-          <!--android:id="@+id/main.collapsing"-->
-          <!--android:layout_width="match_parent"-->
-          <!--android:layout_height="match_parent"-->
-          <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
-          <!--android:fitsSystemWindows="true"-->
-          <!--app:contentScrim="?attr/colorPrimary"-->
-          <!--&gt;-->
+      <android.support.design.widget.CollapsingToolbarLayout
+          android:id="@+id/main.collapsing"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          app:layout_scrollFlags="scroll|exitUntilCollapsed"
+          android:fitsSystemWindows="true"
+          app:contentScrim="?attr/colorPrimary"
+          >
 
          <ImageView
          android:id="@+id/image_new"
-         android:layout_width="0dp"
-         android:layout_height="0dp"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:contentDescription="@string/analyst"
          android:scaleType="centerCrop"
          android:adjustViewBounds="true"
          android:fitsSystemWindows="true"
@@ -43,8 +44,8 @@
               <!--app:expandedTitleMarginStart="48dp"-->
               <!--app:expandedTitleMarginEnd="64dp"-->
               <!--/>-->
-      <!--</android.support.design.widget.CollapsingToolbarLayout>-->
-   <!--</android.support.design.widget.AppBarLayout>-->
+      </android.support.design.widget.CollapsingToolbarLayout>
+   </android.support.design.widget.AppBarLayout>
 
    <android.support.v4.widget.NestedScrollView
        android:layout_width="match_parent"
@@ -53,39 +54,80 @@
        android:scrollbarFadeDuration="0"
        app:layout_behavior="@string/appbar_scrolling_view_behavior"
        >
-       <WebView
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:id="@+id/web_page">
-       </WebView>
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="vertical">-->
-      <!--<TextView-->
-      <!--android:layout_width="match_parent"-->
-      <!--android:layout_height="wrap_content"-->
-      <!--android:layout_marginBottom="3dp"-->
-      <!--android:textStyle="bold"-->
-      <!--android:textSize="@dimen/marginsdetail"-->
-      <!--android:lines="2"-->
-      <!--tools:text="Police warn daredevil cliff jumpers who are 'risking their lives for likes"-->
-      <!--android:id="@+id/main_title"/>-->
-      <!--<TextView-->
-      <!--android:layout_width="match_parent"-->
-      <!--android:layout_height="wrap_content"-->
-      <!--tools:text="Yesterday, 12:45 PM"-->
-      <!--android:id="@+id/date_text"-->
-      <!--android:lines="1"-->
-      <!--android:layout_marginBottom="4dp"/>-->
-       <!--<TextView-->
-       <!--android:layout_width="match_parent"-->
-       <!--android:layout_height="wrap_content"-->
-       <!--tools:text="Daredevils attempting dangerous cliff dives in a quest for likes has led to an increase in costly helicopter airlifts in California, police say.\n As young people pursue the perfect selfie or video for their social media pages, the Los Angeles County. Sheriff's Department says it is spending hundreds of thousands of dollars plucking the injured and  stranded from beauty spot locations. People have to understand: people die up in those mountains. For every rescue you see that we do, there are ones that we don't make. They're dead, said Deputy A social media search for locations like Eaton Canyon, Hermit Falls and Malibu Creek Rock Pool reveal dozens of risky selfie videos. Two men were recently rescued after being injured while being filmed at"-->
-       <!--android:textSize="14sp"-->
-       <!--android:typeface="sans"-->
-       <!--android:id="@+id/full_text"/>-->
-    <!--</LinearLayout>-->
+       <!--<WebView-->
+           <!--android:layout_width="match_parent"-->
+           <!--android:layout_height="wrap_content"-->
+           <!--android:id="@+id/web_page">-->
+       <!--</WebView>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/detail_lay">
+      <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="2dp"
+      android:textStyle="bold"
+      android:textSize="@dimen/marginsdetail"
+      android:lines="2"
+      tools:text="Police warn daredevil cliff jumpers who are 'risking their lives for likes"
+      android:id="@+id/main_title"/>
+      <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textSize="@dimen/date_detail"
+      tools:text="Yesterday, 12:45 PM"
+      android:id="@+id/date_text"
+      android:lines="1"
+      android:layout_marginBottom="4dp"/>
+       <TextView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       tools:text="Daredevils attempting dangerous cliff dives in a quest for likes has led to an increase in costly helicopter airlifts in California, police say.\n As young people pursue the perfect selfie or video for their social media pages, the Los Angeles County. Sheriff's Department says it is spending hundreds of thousands of dollars plucking the injured and  stranded from beauty spot locations. People have to understand: people die up in those mountains. For every rescue you see that we do, there are ones that we don't make. They're dead, said Deputy A social media search for locations like Eaton Canyon, Hermit Falls and Malibu Creek Rock Pool reveal dozens of risky selfie videos. Two men were recently rescued after being injured while being filmed at"
+       android:textSize="@dimen/abstract_detail"
+       android:typeface="sans"
+       android:id="@+id/full_text"/>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/progress_det"
+            android:visibility="gone"/>
+    </LinearLayout>
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:orientation="vertical"
+         android:visibility="gone"
+         android:id="@+id/edit_lay">
+         <EditText
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:textSize="@dimen/marginsdetail"
+             android:lines="2"
+             android:textStyle="bold"
+             android:id="@+id/title_edit"
+             />
+         <EditText
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:textSize="@dimen/date_detail"
+             android:id="@+id/date_edit"
+             android:lines="1"
+             android:layout_marginBottom="4dp"/>
+         <EditText
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:textSize="@dimen/abstract_detail"
+             android:typeface="sans"
+             android:id="@+id/full_edit"/>
+     </LinearLayout>
+    </LinearLayout>
    </android.support.v4.widget.NestedScrollView>
 
 

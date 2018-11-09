@@ -12,4 +12,8 @@
     <dimen name="margins">5dp</dimen>
     //////////////////////////////////////////
     <dimen name="marginsdetail">22sp</dimen>
+    //////////////////////////////////////////
+    <dimen name="date_detail">11sp</dimen>
+    <dimen name="abstract_detail">14sp</dimen>
+    <dimen name="margin_txt">4dp</dimen>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.peter.exercise2.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -13,12 +14,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import com.example.peter.exercise2.Models.Result;
 import com.example.peter.exercise2.NewsDetailsActivity;
+import com.example.peter.exercise2.NewsEntity;
 import com.example.peter.exercise2.R;
 
 
@@ -28,15 +31,17 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
     private Context context;
     private String multimediaUrl;
     private int screenWidth;
-    private List<Result> resList;
+    private List<NewsEntity> newsList;
+    public static final int REQUEST_CODE = 0;
+  //  private List<Result> resList;
 
-    public NewsAdapter(Context context, List<Result> resList, int screenWidth) {
+    public NewsAdapter(Context context, List<NewsEntity> newsList, int screenWidth) {
         this.context = context;
-        this.resList = resList;
+        this.newsList = newsList;
         this.screenWidth = screenWidth;
     }
 
-
+    @NonNull
     public NewsHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.newsitem, parent,false);
@@ -45,25 +50,25 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
     }
 
     public void onBindViewHolder(@NonNull final NewsHolder holder, int position) {
-        final Result news = resList.get(position);
+        final NewsEntity news = newsList.get(position);
         if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
             holder.cardplace.setLayoutParams(new LinearLayout.LayoutParams(screenSize(), LinearLayout.LayoutParams.WRAP_CONTENT));
         } else if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             holder.cardplace.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         }
-        if(news.getSubsection() != null && news.getSubsection() != ""){
-            holder.categorytxt.setText(news.getSubsection());
+        if(news.getCategory()!= null && news.getCategory() != ""){
+            holder.categorytxt.setText(news.getCategory());
         } else {
             holder.categorytxt.setVisibility(View.GONE);
         }
         holder.titletxt.setText(news.getTitle());
-        holder.previewtxt.setText(news.getAbstract());
-        holder.datetxt.setText(news.getPublishedDate());
+        holder.previewtxt.setText(news.getFulltext());
+        holder.datetxt.setText(news.getPublishDate());
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.placeholder(R.drawable.ic_action_holder);
       //  requestOptions.centerCrop();
-        if(!news.getMultimedia().isEmpty()){
-            multimediaUrl = news.getMultimedia().get(3).getUrl();
+        if(news.getMultimediqUrl() != ""){
+            multimediaUrl = news.getMultimediqUrl();
             Glide.with(context).setDefaultRequestOptions(requestOptions)
                     .load(multimediaUrl)
                     .into(holder.imageNews);
@@ -77,20 +82,27 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
             //  String name = news.getCategory().getName();
             //  Toast.makeText(context, name, Toast.LENGTH_SHORT).show();
               Intent intent = new Intent(context, NewsDetailsActivity.class);
-              intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-              intent.putExtra(Result.class.getSimpleName(), news.getUrl());
-              intent.putExtra(Result.class.getName(), multimediaUrl);
+           //   intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+              intent.putExtra(NewsEntity.class.getSimpleName(), news.getId());
+            //  intent.putExtra(Result.class.getSimpleName(), news.getUrl());
+            //  intent.putExtra(Result.class.getName(), multimediaUrl);
               //context.startActivity(intent);
-              context.getApplicationContext().startActivity(intent);
+                Activity ListActivity = (Activity) context;
+                ListActivity.startActivityForResult(intent, REQUEST_CODE);
+
+              //   context.getApplicationContext().startActivity(intent);
             }
         });
     }
 
     public int getItemCount() {
-        return resList.size();
+        return newsList.size();
     }
 
 
+    public void onAdapterResult(int requestCode, int resultCode, Intent data){
+        Toast.makeText(context,"Contact",Toast.LENGTH_LONG);
+    }
 
     public class NewsHolder extends RecyclerView.ViewHolder{
         private TextView categorytxt;
@@ -112,6 +124,37 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
         }
 
 
+    }
+
+    public void filter(List<NewsEntity> filterList){
+        newsList = filterList;
+        notifyDataSetChanged();
+    }
+
+    public void delete(int id){
+        int position = 0;
+        for(NewsEntity news : newsList){
+            if(news.getId() == id){
+              position = newsList.indexOf(news);
+              newsList.remove(news);
+              break;
+            }
+        }
+       notifyItemRemoved(position);
+    }
+
+    public void edit(int id, String title, String fullText, String publishText){
+      int position = 0;
+      for(NewsEntity news: newsList){
+          if(news.getId() == id){
+             position = newsList.indexOf(news);
+             newsList.get(position).setTitle(title);
+             newsList.get(position).setFulltext(fullText);
+             newsList.get(position).setPublishDate(publishText);
+             break;
+          }
+      }
+      notifyItemChanged(position);
     }
 
     private int screenSize(){
