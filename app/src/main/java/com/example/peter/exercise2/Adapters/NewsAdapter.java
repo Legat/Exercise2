@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -19,8 +23,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import com.example.peter.exercise2.ListFragment;
+import com.example.peter.exercise2.MewsDetailsFragment;
 import com.example.peter.exercise2.Models.Result;
-import com.example.peter.exercise2.NewsDetailsActivity;
+
 import com.example.peter.exercise2.NewsEntity;
 import com.example.peter.exercise2.R;
 
@@ -52,7 +58,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
     public void onBindViewHolder(@NonNull final NewsHolder holder, int position) {
         final NewsEntity news = newsList.get(position);
         if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-            holder.cardplace.setLayoutParams(new LinearLayout.LayoutParams(screenSize(), LinearLayout.LayoutParams.WRAP_CONTENT));
+            if(sizeDp() >= 720){
+                holder.cardplace.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
+            } else {
+                holder.cardplace.setLayoutParams(new LinearLayout.LayoutParams(screenSize(), LinearLayout.LayoutParams.WRAP_CONTENT));
+            }
         } else if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             holder.cardplace.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         }
@@ -81,15 +91,39 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
             public void onClick(View view) {
             //  String name = news.getCategory().getName();
             //  Toast.makeText(context, name, Toast.LENGTH_SHORT).show();
-              Intent intent = new Intent(context, NewsDetailsActivity.class);
-           //   intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-              intent.putExtra(NewsEntity.class.getSimpleName(), news.getId());
-            //  intent.putExtra(Result.class.getSimpleName(), news.getUrl());
-            //  intent.putExtra(Result.class.getName(), multimediaUrl);
-              //context.startActivity(intent);
-                Activity ListActivity = (Activity) context;
-                ListActivity.startActivityForResult(intent, REQUEST_CODE);
+            //    Bundle args = new Bundle();
+             //   args.putInt(NewsEntity.class.getSimpleName(), news.getId());
+                FragmentManager manager = ((AppCompatActivity)context).getSupportFragmentManager();
+              if(sizeDp() > 720 && context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                 Fragment fragment = manager.findFragmentById(R.id.frame_detail);
+                 Fragment fragmentList = manager.findFragmentById(R.id.container);
+                // if(!ListFragment.newInstance().equals(fragmentList)){
+              //       manager.beginTransaction().replace(R.id.container, ListFragment.newInstance()).commit();
+             //    }
+                 if(fragment == null){
+                     manager.beginTransaction().add(R.id.frame_detail, MewsDetailsFragment.newInstance(news.getId()),"INFO_TAG")
+                                               .commit();
+                 } else {
+                     manager.beginTransaction().replace(R.id.frame_detail,MewsDetailsFragment.newInstance(news.getId()),"INFO_TAG")
+                                               .commit();
+                 }
+              }  else {
+            //    Fragment fragment = new MewsDetailsFragment();
+           //     fragment.setArguments(args);
 
+                manager.beginTransaction().replace(R.id.container, MewsDetailsFragment.newInstance(news.getId()),"INFO_TAG")
+                        .addToBackStack(null)
+                        .commit();
+                     }
+
+//                intent.putExtra(NewsEntity.class.getSimpleName(), news.getId());
+
+
+
+                //  intent.putExtra(Result.class.getSimpleName(), news.getUrl());
+                //  intent.putExtra(Result.class.getName(), multimediaUrl);
+                //context.startActivity(intent);
+                //   intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
               //   context.getApplicationContext().startActivity(intent);
             }
         });
@@ -162,6 +196,23 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
         int width = metrix.widthPixels/2;
         return width;
     }
+
+     private float sizeDp(){
+         // float density = getResources().getDisplayMetrics().density;
+         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+         int width = metrics.widthPixels;
+         //int heigth = metrics.heightPixels;
+         float dp =  width/metrics.scaledDensity;
+         return dp;
+
+    }
+
+//    private int convert(){
+//        float widthDp = sizeDp();
+//        int widthPx = screenWidth*2;
+//        int res = (int) (300 * widthPx / widthDp);
+//        return res;
+//    }
 
 }
 

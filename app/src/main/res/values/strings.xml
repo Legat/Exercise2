@@ -42,7 +42,7 @@
         <item>obituaries</item>
         <item>insider</item>
     </string-array>
-//////////////////////////////////////////////////
+    //////////////////////////////////////////////////
     <string name="save">save</string>
     <string name="edit">edit</string>
     <string name="delete">delete</string>

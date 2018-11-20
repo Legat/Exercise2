@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/splash_ny"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".HomeActivity">
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="7"
+      android:layout_centerHorizontal="true"
+      android:layout_marginTop="39dp"
+      android:layout_marginRight="70dp"
+      android:layout_marginLeft="70dp"
+
+      android:orientation="vertical">
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/pager">
+    </android.support.v4.view.ViewPager>
+    <me.relex.circleindicator.CircleIndicator
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/indicator"
+        android:layout_below="@id/pager"
+        >
+    </me.relex.circleindicator.CircleIndicator>
+  </LinearLayout>
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:orientation="vertical">
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="0dp"
+          android:textSize="@dimen/welcome_size"
+          android:layout_gravity="center"
+          android:text="Welcome!"
+          android:textColor="@color/colorDark"
+          android:textStyle="bold"
+          android:id="@+id/welcome"/>
+    </LinearLayout>
+
+
+
+</LinearLayout>
