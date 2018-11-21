@@ -85,7 +85,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
             return true;
         }
     }
-
+     ///test
     private void sendMessage(){
         String message = messageEdit.getText().toString();
         Intent intent = new Intent();
