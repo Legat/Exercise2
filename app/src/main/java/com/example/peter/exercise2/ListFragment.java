@@ -61,6 +61,7 @@ public class ListFragment extends Fragment implements Handler.Callback{
     private static final String DATABASE_EXIST = "exist";
     public static final String SPLASH_BOOL_VAL = "value";
     private final static String Redact_Id = "redact_id";
+    private static final String ARG_KEY = "arg_key";
     private GridLayoutManager gridLayoutManager;
     private NewsAdapter adapter;
 
@@ -373,6 +374,7 @@ public class ListFragment extends Fragment implements Handler.Callback{
 
                     SharedPreferences.Editor editor = prefer.edit();
                     editor.putBoolean(DATABASE_EXIST, true);
+                    editor.putString(ARG_KEY,arg);
                     editor.apply();
                 }  // end Preference Data Base
                 //
