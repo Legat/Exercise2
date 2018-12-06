@@ -9,7 +9,6 @@ public class StopReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
         // an Intent broadcast.
 
         context.stopService(new Intent(context,SupportService.class));
