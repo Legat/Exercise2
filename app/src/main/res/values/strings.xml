@@ -46,6 +46,10 @@
     <string name="save">save</string>
     <string name="edit">edit</string>
     <string name="delete">delete</string>
+
+    <string name="tablet">tablet</string>
+    <string name="vertical">vertical</string>
+    <string name="horizontal">horizontal</string>
 </resources>
 
 
