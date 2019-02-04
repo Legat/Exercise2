@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,7 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AboutActivity extends AppCompatActivity implements View.OnClickListener {
+import com.example.peter.exercise2.Presenter.AboutPresenter;
+import com.example.peter.exercise2.View.IAboutView;
+
+public class AboutActivity extends AppCompatActivity implements View.OnClickListener, IAboutView {
    private static final String FACE_BOOK = "https://www.facebook.com/peter.shnepelev";
    private static final String VK_COM = "https://vk.com/patricul";
    private static final String TELEGRAM = "https://web.telegram.org/#/im?p=@Patricul";
@@ -22,10 +24,13 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
     private ImageButton faceBtn, telBtn, vkBtn;
     private EditText messageEdit;
     private LinearLayout conainer;
+    private AboutPresenter aboutPresenter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        aboutPresenter = new AboutPresenter(this);
+
         messageEdit = findViewById(R.id.message_edit);
 
         sendBtn = findViewById(R.id.send_btn);
@@ -46,12 +51,14 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         vkBtn.setOnClickListener(this);
 
         conainer = findViewById(R.id.info_container);
-        TextView disclaimer = new TextView(this);
-        disclaimer.setText(R.string.disclaimer);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.gravity = Gravity.CENTER;
-        disclaimer.setLayoutParams(params);
-        conainer.addView(disclaimer);
+        aboutPresenter.addView(this);
+
+//        TextView disclaimer = new TextView(this);
+//        disclaimer.setText(R.string.disclaimer);
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//        params.gravity = Gravity.CENTER;
+//        disclaimer.setLayoutParams(params);
+//        conainer.addView(disclaimer);
     }
 
     @Override
@@ -59,16 +66,20 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
 
         switch (view.getId()){
             case R.id.face_btn:
-                networks(FACE_BOOK);
+             //   networks(FACE_BOOK);
+                aboutPresenter.network(1);
                 break;
             case R.id.teleg_btn:
-                networks(TELEGRAM);
+             //   networks(TELEGRAM);
+                aboutPresenter.network(3);
                 break;
             case R.id.vk_btn:
-                networks(VK_COM);
+            //    networks(VK_COM);
+                aboutPresenter.network(2);
                 break;
             case R.id.send_btn:
-                sendMessage();
+               // sendMessage();
+                aboutPresenter.sendMessage(messageEdit.getText().toString(),this);
         }
     }
     private void networks(String reference){
@@ -96,5 +107,25 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
             startActivity(intent);
         else
             Toast.makeText(this, R.string.executing, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void sendMessage(Intent intent) {
+     startActivity(intent);
+    }
+
+    @Override
+    public void networks(Intent intent) {
+      startActivity(intent);
+    }
+
+    @Override
+    public void getView(final TextView disclaimer) {
+    conainer.addView(disclaimer);
+    }
+
+    @Override
+    public void sendMessageError(int message) {
+     Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
     }
 }

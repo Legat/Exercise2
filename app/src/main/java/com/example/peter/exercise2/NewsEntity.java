@@ -23,6 +23,12 @@ public class NewsEntity {
     public NewsEntity() {
     }
 
+    public NewsEntity(String title, String fulltext, String publishDate) {
+        this.title = title;
+        this.fulltext = fulltext;
+        this.publishDate = publishDate;
+    }
+
     public int getId() {
         return id;
     }

@@ -12,6 +12,8 @@ import android.util.DisplayMetrics;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.example.peter.exercise2.Data.ListData;
+
 public class MainActivity extends AppCompatActivity implements CallBackChange{
     private FrameLayout container;
     private FragmentManager fragmentManager;
@@ -27,13 +29,13 @@ public class MainActivity extends AppCompatActivity implements CallBackChange{
 
         if(fragment == null){
             fragmentManager.beginTransaction()
-                    .add(R.id.container, ListFragment.newInstance())
+                    .add(R.id.container, ListData.newInstance())
                     .commit();
         }
 
         if(fragment instanceof MewsDetailsFragment && widthDp() >= 720
                   && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-           fragmentManager.beginTransaction().replace(R.id.container, ListFragment.newInstance())
+           fragmentManager.beginTransaction().replace(R.id.container, ListData.newInstance())
                                              .commit();
            if(savedInstanceState != null){
                int id = savedInstanceState.getInt("key");
@@ -49,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements CallBackChange{
 
     }
 
+    private void buildDialog(){
+
+    }
+
     @Override
     public void onBackPressed() {
         int count = fragmentManager.getBackStackEntryCount();
@@ -56,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements CallBackChange{
                 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
             finish();
         }
+
      //   if(count==0) {
         super.onBackPressed();
     //    }else{
@@ -93,14 +100,11 @@ public class MainActivity extends AppCompatActivity implements CallBackChange{
     }
 
 
-    @Override
-    public void onItemChanged(int id) {
 
-    }
 
     @Override
-    public void onItemDelete( int id) {
-        ListFragment fragment = ListFragment.newInstance();
+    public void onItemDelete(int id) {
+        ListFragment fragment = ListData.newInstance();
         fragmentManager.beginTransaction().add(R.id.container,fragment).commit();
        // fragment.deleteItem(id);
 

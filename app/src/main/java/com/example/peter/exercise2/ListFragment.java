@@ -1,6 +1,7 @@
 package com.example.peter.exercise2;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -41,12 +42,16 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.arellomobile.mvp.MvpFragment;
 import com.example.peter.exercise2.Adapters.NewsAdapter;
 import com.example.peter.exercise2.Adapters.VerticalSpaceItemDecoration;
 import com.example.peter.exercise2.Models.News;
 import com.example.peter.exercise2.Models.Result;
+import com.example.peter.exercise2.Presenter.IListPresenter;
+import com.example.peter.exercise2.Presenter.ListPresenter;
 import com.example.peter.exercise2.Providers.ApiService;
 import com.example.peter.exercise2.Providers.RetrofitClient;
+import com.example.peter.exercise2.View.IListView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,7 +59,7 @@ import java.util.List;
 
 import retrofit2.Call;
 
-public class ListFragment extends Fragment implements Handler.Callback{
+public class ListFragment extends Fragment implements IListView,Handler.Callback {
     private static final int VERTICAL_STATE_ITEM = 4;
     private static final String API_KEY = "d94b328606074836a7618073303334da";
     private static final String SPLASH_SETTING = "splash";
@@ -81,9 +86,11 @@ public class ListFragment extends Fragment implements Handler.Callback{
     private SharedPreferences prefer;
     private ArrayList<NewsEntity> listEnt;
     private AppDataBase db;
-    private FrameLayout progressFrame;
+  //  private FrameLayout progressFrame;
+    private ProgressBar progress;
     private Toolbar toolbar;
     private AppCompatActivity appCompatActivity;
+    private IListPresenter listPresenter;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +98,7 @@ public class ListFragment extends Fragment implements Handler.Callback{
         setRetainInstance(true);
         prefer = App.getInstanceApp().getPreference();
         db = App.getInstanceApp().getDatabase();
-
+        listPresenter = new ListPresenter(this);
         if(param == null || param == ""){
             param = "home.json";
         }
@@ -105,28 +112,70 @@ public class ListFragment extends Fragment implements Handler.Callback{
 
 
         View view = inflater.inflate(R.layout.activity_list,container,false);
-        progressFrame = view.findViewById(R.id.progress_frame);
-
+        progress = view.findViewById(R.id.progress_bar);
+        fabButton = view.findViewById(R.id.update);
         setToolBar(view);
         recyclerView = view.findViewById(R.id.list_news);
-        fabButton = view.findViewById(R.id.update);
-        handler = new Handler(this);
-        newsTread = new NewsThread(handler, param);
-        newsTread.start();
+
+
+     //   handler = new Handler(this);
+    //    newsTread = new NewsThread(handler, param);
+    //    newsTread.start();
+
         return view;
 
 
 
-        //  if (!newsTread.isAlive()){
+
 
 
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                SharedPreferences.Editor editor = prefer.edit();
+//                editor.putBoolean(DATABASE_EXIST, false);
+//                editor.apply();
+//                newsTread = new NewsThread(handler, param);
+//                newsTread.start();
+                listPresenter.loadList(getActivity(),2);
+            }
+        });
+        listPresenter.loadList(getActivity(),1);
+
+    }
+
+
 
     private void setToolBar(View view){
         toolbar = view.findViewById(R.id.main_toolbar);
         toolbar.setTitle("New York Times");
         ((MainActivity)getActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void loadList(NewsAdapter adapter) {
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            if(widthDp() >= 720){   /// for Portaint
+                linearManager();
+            } else{
+                gridManager();
+            }
+
+        } else{
+            linearManager();
+        }
+        recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_STATE_ITEM ));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+
     }
 
     @Override
@@ -139,11 +188,11 @@ public class ListFragment extends Fragment implements Handler.Callback{
                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 }
               //  frame = ProgressLay();
-                progressFrame.setVisibility(View.VISIBLE);
+                progress.setVisibility(View.VISIBLE);
 
                 break;
             case 2:
-                progressFrame.setVisibility(View.GONE);
+                progress.setVisibility(View.GONE);
 
                 fabButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -188,10 +237,10 @@ public class ListFragment extends Fragment implements Handler.Callback{
         return false;
     }
 
-    public static ListFragment newInstance(){
-        ListFragment fragment = new ListFragment();
-        return fragment;
-    }
+//    public static ListFragment newInstance(){
+//        ListFragment fragment = new ListFragment();
+//        return fragment;
+//    }
 
     private void linearManager(){
         linearLayoutManager = new LinearLayoutManager(getContext());
@@ -254,15 +303,15 @@ public class ListFragment extends Fragment implements Handler.Callback{
                         SharedPreferences.Editor editor = prefer.edit();
                         editor.putBoolean(DATABASE_EXIST, false);
                         editor.apply();
-//                          FilterRun filterRun = new FilterRun(title);
-//                          new Thread(filterRun).start();
+
 
                         param = compoundButton.getText().toString() + ".json";
                         dialog.dismiss();
                         getActivity().invalidateOptionsMenu();
-                        newsTread = new NewsThread(handler, param);
-                        newsTread.start();
+//                        newsTread = new NewsThread(handler, param);
+//                        newsTread.start();
 
+                         listPresenter.filterList(getActivity(), param);
 
                     }
                 });
@@ -322,6 +371,25 @@ public class ListFragment extends Fragment implements Handler.Callback{
         if(id != 0) {
             adapter.delete(id);
                     }
+    }
+
+
+
+    @Override
+    public void errorMessage(String message) {
+      Toast.makeText(getActivity(),message,Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showProgress() {
+      recyclerView.setVisibility(View.INVISIBLE);
+      progress.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgress() {
+      progress.setVisibility(View.GONE);
+      recyclerView.setVisibility(View.VISIBLE);
     }
 
 

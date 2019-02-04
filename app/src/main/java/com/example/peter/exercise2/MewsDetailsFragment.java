@@ -21,10 +21,14 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.peter.exercise2.Presenter.INewsInformPresenter;
+import com.example.peter.exercise2.Presenter.NewsInformPresenter;
+import com.example.peter.exercise2.View.INewsDetailsInfoView;
+
 import static android.app.Activity.RESULT_FIRST_USER;
 import static android.app.Activity.RESULT_OK;
 
-public class MewsDetailsFragment extends Fragment implements Handler.Callback{
+public class MewsDetailsFragment extends Fragment implements Handler.Callback, INewsDetailsInfoView{
     public final static String Redact_Id = "redact_id";
     public final static String TITLE = "title_n";
     public final static String FUL_NEWS = "full_info";
@@ -46,11 +50,12 @@ public class MewsDetailsFragment extends Fragment implements Handler.Callback{
     private int id;
     private Toolbar toolbar;
     private CallBackChange callBacker;
+    private INewsInformPresenter newsInformPresenter;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = App.getInstanceApp().getDatabase();
-
+        newsInformPresenter = new NewsInformPresenter(this);
     }
 
     @Override
@@ -82,11 +87,12 @@ public class MewsDetailsFragment extends Fragment implements Handler.Callback{
         ((MainActivity)getActivity()).setSupportActionBar(toolbar);
        // ((MainActivity)getActivity()).getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         setHasOptionsMenu(true);
-        // setResult(RESULT_CANCELED);
 
-        handler = new Handler(this);
+
+     //   handler = new Handler(this);
         id = getArguments().getInt(NewsEntity.class.getSimpleName());
-        new DetailThread(id,handler).start();
+        newsInformPresenter.getNews(id);
+    //    new DetailThread(id,handler).start();
         return view;
     }
 
@@ -109,6 +115,7 @@ public class MewsDetailsFragment extends Fragment implements Handler.Callback{
         // ((MainActivity)getActivity()).getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         setHasOptionsMenu(true);
     }
+
 
     @Override
     public boolean handleMessage(Message message) {
@@ -167,109 +174,98 @@ public class MewsDetailsFragment extends Fragment implements Handler.Callback{
             case R.id.edit:
                 save.setVisible(true);
                 edit.setVisible(false);
-//                EditThread = new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                     handler.post(new Runnable() {
-//                         @Override
-//                         public void run() {
+
                 detailLay.setVisibility(View.GONE);
                 editLay.setVisibility(View.VISIBLE);
-                edTitle = getView().findViewById(R.id.title_edit);
-                edDate = getView().findViewById(R.id.date_edit);
-                edFulltext = getView().findViewById(R.id.full_edit);
-                edTitle.setText(news.getTitle());
-                edDate.setText(news.getPublishDate());
-                edFulltext.setText(news.getFulltext());
-//                         }
-//                     });
-//                    }
-//                });
+               newsInformPresenter.editNews(new NewsEntity(title.getText().toString(), fulltext.getText().toString() ,datetext.getText().toString()));
+
 
                 break;
             case R.id.delete:
-                EditThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        DAO editDao = db.NewsDao();
-                        editDao.deleteItem(news);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent();
-
-                                int id = news.getId();
-                                intent.putExtra(Redact_Id, id);
-
-                               getActivity().getSupportFragmentManager().beginTransaction().remove(MewsDetailsFragment.this).commit();
-
-                                 callBacker.onItemDelete(id);
-                              //  getActivity().setResult(RESULT_OK,intent);
-                             //   finish();
-                            }
-                        });
-                    }
-                });
-                EditThread.start();
+                newsInformPresenter.deleteNews(id,getActivity(),this);
+//                EditThread = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        DAO editDao = db.NewsDao();
+//                        editDao.deleteItem(news);
+//                        handler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Intent intent = new Intent();
+//
+//                                int id = news.getId();
+//                                intent.putExtra(Redact_Id, id);
+//
+//                               getActivity().getSupportFragmentManager().beginTransaction().remove(MewsDetailsFragment.this).commit();
+//
+//                               callBacker.onItemDelete(id);
+//                              //  getActivity().setResult(RESULT_OK,intent);
+//                             //   finish();
+//                            }
+//                        });
+//                    }
+//                });
+//                EditThread.start();
                 break;
             case R.id.save:
                 save.setVisible(false);
                 edit.setVisible(true);
-                EditThread = new Thread(new Runnable() {
-                    //    volatile boolean isRunning = true;
-                    @Override
-                    public void run() {
-
-                        handler.post(new Runnable() {
-
-                            @Override
-                            public void run() {
-
-                                news.setTitle(edTitle.getText().toString());
-                                news.setFulltext(edFulltext.getText().toString());
-                                news.setPublishDate(edDate.getText().toString());
-                            }
-                        });
-                        try {
-                            Thread.sleep(1000);
-                            DAO editDao = db.NewsDao();
-                            editDao.update(news);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                detailLay.setVisibility(View.VISIBLE);
-                                editLay.setVisibility(View.GONE);
-                                title.setText(news.getTitle());
-                                datetext.setText(news.getPublishDate());
-                                fulltext.setText(news.getFulltext());
-
-//                                String title = news.getTitle();
-//                                String publishDate = news.getPublishDate();
-//                                String fullTex = news.getFulltext();
-                                Intent intent = new Intent();
-                                intent.putExtra(TITLE, news.getTitle());
-                                intent.putExtra(FUL_NEWS, news.getFulltext());
-                                intent.putExtra(PUBLISH_NEWS, news.getPublishDate());
-                                intent.putExtra(Redact_Id, news.getId());
-                               // getActivity().setResult(RESULT_FIRST_USER,intent);
-
-                            }
-                        });
-
-
-
-                    }
-
-                    //   private void stopRun(){
-                    //      isRunning = false;
-                    //    }
-                });
-                EditThread.start();
+                newsInformPresenter.saveNews(id, new NewsEntity(edTitle.getText().toString(), edFulltext.getText().toString(), edDate.getText().toString()));
+//                EditThread = new Thread(new Runnable() {
+//                    //    volatile boolean isRunning = true;
+//                    @Override
+//                    public void run() {
+//
+//                        handler.post(new Runnable() {
+//
+//                            @Override
+//                            public void run() {
+//
+//                                news.setTitle(edTitle.getText().toString());
+//                                news.setFulltext(edFulltext.getText().toString());
+//                                news.setPublishDate(edDate.getText().toString());
+//                            }
+//                        });
+//                        try {
+//                            Thread.sleep(1000);
+//                            DAO editDao = db.NewsDao();
+//                            editDao.update(news);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//
+//                        handler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                detailLay.setVisibility(View.VISIBLE);
+//                                editLay.setVisibility(View.GONE);
+//                                title.setText(news.getTitle());
+//                                datetext.setText(news.getPublishDate());
+//                                fulltext.setText(news.getFulltext());
+//
+////                                String title = news.getTitle();
+////                                String publishDate = news.getPublishDate();
+////                                String fullTex = news.getFulltext();
+//                                Intent intent = new Intent();
+//                                intent.putExtra(TITLE, news.getTitle());
+//                                intent.putExtra(FUL_NEWS, news.getFulltext());
+//                                intent.putExtra(PUBLISH_NEWS, news.getPublishDate());
+//                                intent.putExtra(Redact_Id, news.getId());
+//                               // getActivity().setResult(RESULT_FIRST_USER,intent);
+//
+//                            }
+//                        });
+//
+//
+//
+//                    }
+//
+//                    //   private void stopRun(){
+//                    //      isRunning = false;
+//                    //    }
+//                });
+//                EditThread.start();
                 break;
 
 
@@ -279,7 +275,38 @@ public class MewsDetailsFragment extends Fragment implements Handler.Callback{
 
     }
 
+    @Override
+    public void getNews(NewsEntity news) {
+      title.setText(news.getTitle());
+      datetext.setText(news.getPublishDate().toString());
+      fulltext.setText(news.getFulltext());
+      newsInformPresenter.loadImg(imageNews,news.getMultimediqUrl(),this);
+    }
 
+    @Override
+    public void getEditNews(NewsEntity news) {
+        edTitle = getView().findViewById(R.id.title_edit);
+        edDate = getView().findViewById(R.id.date_edit);
+        edFulltext = getView().findViewById(R.id.full_edit);
+        edTitle.setText(news.getTitle());
+        edDate.setText(news.getPublishDate());
+        edFulltext.setText(news.getFulltext());
+
+    }
+
+    @Override
+    public void saveNews(NewsEntity news) {
+        detailLay.setVisibility(View.VISIBLE);
+        editLay.setVisibility(View.GONE);
+        title.setText(news.getTitle());
+        datetext.setText(news.getPublishDate());
+        fulltext.setText(news.getFulltext());
+    }
+
+    @Override
+    public void deleteNews(int id) {
+
+    }
 
 
     private class DetailThread extends Thread {

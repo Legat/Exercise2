@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import com.example.peter.exercise2.Data.NewsInformData;
 import com.example.peter.exercise2.ListFragment;
 import com.example.peter.exercise2.MewsDetailsFragment;
 import com.example.peter.exercise2.Models.Result;
@@ -111,7 +112,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder>  {
             //    Fragment fragment = new MewsDetailsFragment();
            //     fragment.setArguments(args);
 
-                manager.beginTransaction().replace(R.id.container, MewsDetailsFragment.newInstance(news.getId()),"INFO_TAG")
+                manager.beginTransaction().replace(R.id.container, NewsInformData.newInstance(news.getId()),"INFO_TAG")
                         .addToBackStack(null)
                         .commit();
                      }

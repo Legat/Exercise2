@@ -1,22 +1,18 @@
 package com.example.peter.exercise2;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
+import android.util.Log;
 
 import com.example.peter.exercise2.Models.News;
 import com.example.peter.exercise2.Models.Result;
@@ -28,11 +24,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
-public class SupportService extends Service implements CatchException {
+public class SupportService extends Service  {
     SharedPreferences preference;
     AppDataBase bd;
     private static final String ARG_KEY = "arg_key";
@@ -41,7 +43,7 @@ public class SupportService extends Service implements CatchException {
     private List<Result> listresult;
     private ArrayList<NewsEntity> listEnt;
     private UpdateThread updateThread;
-    private Handler handler;
+
     Timer timer;
     @Nullable
     @Override
@@ -52,7 +54,7 @@ public class SupportService extends Service implements CatchException {
     @Override
     public void onCreate() {
         super.onCreate();
-        handler = new Handler();
+
         preference = App.getInstanceApp().getPreference();
         listresult = new ArrayList<>();
         bd = App.instanceApp.getDatabase();
@@ -76,47 +78,145 @@ public class SupportService extends Service implements CatchException {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 //        notificationManager.notify(001, builder.build());
         createNotification();
+///  old realization ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//
+//
+//                Intent notificationIntent = new Intent(SupportService.this,MainActivity.class);
+//                PendingIntent pendInt = PendingIntent.getActivity(SupportService.this,0,notificationIntent,0);
+//                Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.the_new_york);
+//                NotificationCompat.Builder builder = new NotificationCompat.Builder(SupportService.this,"CHANNEL")
+//                        .setLargeIcon(bitmap);
+//                if(InternetConnection.checkConnection(getApplicationContext())) {
+//                    builder.setSmallIcon(R.drawable.ic_done);
+//                    String arg = getArg();
+//                    Thread updateThread = new UpdateThread(arg);
+//                    updateThread.start();
+//                } else {
+//                    builder.setSmallIcon(R.drawable.ic_error);
+//                }
+//
+//                builder.setDefaults(Notification.DEFAULT_VIBRATE)
+//                        .setContentTitle("NY Times")
+//                        .setContentText("News updating...")
+//                        .setAutoCancel(true)
+//                        .setContentIntent(pendInt);
+//
+//                Notification notification = builder.build();
+//
+//                NotificationManager  notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//                notificationManager.notify(1,notification);
+//
+//                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
+//                    startForeground(1,notification);
+//                    }
+//            }
+//        },10000);
+////////////////// old realization //////////////////////////////////////////////////////////////////////////////////////////
 
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+         Observable<News> observableApi = RetrofitClient.getObservableApi().getObservNews(getArg(),API_KEY);
+                          observableApi.subscribeOn(Schedulers.io())
+                                  .observeOn(AndroidSchedulers.mainThread());
+         Subscription obser = observableApi
+                                  .map(new Func1<News, List<Result>>() {
+             @Override
+             public List<Result> call(News news) {
+                 return news.getResults();
+             }
+         })
+                 .map(new Func1<List<Result>, List<NewsEntity>>() {
+             @Override
+             public List<NewsEntity> call(List<Result> results) {
+                 BaseConverter baseConverter = new BaseConverter();
+                 return listEnt = baseConverter.toDataBase(listresult);
+             }
+         }).subscribe(new Subscriber<List<NewsEntity>>() {
+                     @Override
+                     public void onCompleted() {
 
-                Intent notificationIntent = new Intent(SupportService.this,MainActivity.class);
-                PendingIntent pendInt = PendingIntent.getActivity(SupportService.this,0,notificationIntent,0);
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.the_new_york);
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(SupportService.this,"CHANNEL")
-                        .setLargeIcon(bitmap);
-                if(InternetConnection.checkConnection(getApplicationContext())) {
-                    builder.setSmallIcon(R.drawable.ic_done);
-                    String arg = getArg();
-                    Thread updateThread = new UpdateThread(arg);
-                    updateThread.start();
-                } else {
-                    builder.setSmallIcon(R.drawable.ic_error);
-                }
-//                            .addAction(R.drawable.ic_agree,"OK",pendInt)
-//                            .addAction(R.drawable.ic_cancel,"Cancel",pendInt)
-                builder.setDefaults(Notification.DEFAULT_VIBRATE)
-                        .setContentTitle("NY Times")
-                        .setContentText("News updating...")
-                        .setAutoCancel(true)
-                        .setContentIntent(pendInt);
+                     }
 
-                Notification notification = builder.build();
+                     @Override
+                     public void onError(Throwable e) {
+                     Log.d("MY_TAG","Error " + e);
+                     }
 
-                NotificationManager  notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(1,notification);
+                     @Override
+                     public void onNext(List<NewsEntity> newsEntities) {
+                         final DAO updateDao = bd.NewsDao();
+                         updateDao.deleteAll();
+                         updateDao.insert(newsEntities);
+                         Intent notificationIntent = new Intent(SupportService.this,MainActivity.class);
+                         PendingIntent pendInt = PendingIntent.getActivity(SupportService.this,0,notificationIntent,0);
+                         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.the_new_york);
+                         NotificationCompat.Builder builder = new NotificationCompat.Builder(SupportService.this,"CHANNEL")
+                                 .setLargeIcon(bitmap)
+                                 .setDefaults(Notification.DEFAULT_VIBRATE)
+                                 .setSmallIcon(R.drawable.ic_done)
+                                 .setContentTitle("NY Times")
+                                 .setContentText("News updating...")
+                                 .setAutoCancel(true)
+                                 .setContentIntent(pendInt);
 
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
-                    startForeground(1,notification);
-                    }
-            }
-        },10000);
+                         Notification notification = builder.build();
+
+                         NotificationManager  notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                         notificationManager.notify(1,notification);
+
+                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
+                             startForeground(1,notification);
+                         }
+                     }
+                 });
+           obser.unsubscribe();
+
+
+
+         NewsObservabale(getArg()).timeout(100,TimeUnit.SECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<List<NewsEntity>>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                createErrorNotification(e);
+                            }
+
+                            @Override
+                            public void onNext(List<NewsEntity> newsEntities) {
+                                Intent notificationIntent = new Intent(SupportService.this,MainActivity.class);
+                                PendingIntent pendInt = PendingIntent.getActivity(SupportService.this,0,notificationIntent,0);
+                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.the_new_york);
+                                NotificationCompat.Builder builder = new NotificationCompat.Builder(SupportService.this,"CHANNEL")
+                                        .setLargeIcon(bitmap)
+                                        .setDefaults(Notification.DEFAULT_VIBRATE)
+                                        .setSmallIcon(R.drawable.ic_done)
+                                        .setContentTitle("NY Times")
+                                        .setContentText("News updating...")
+                                        .setAutoCancel(true)
+                                        .setContentIntent(pendInt);
+
+                                Notification notification = builder.build();
+
+                                NotificationManager  notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                notificationManager.notify(1,notification);
+
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
+                                    startForeground(1,notification);
+                                }
+                            }
+                        });
+
+//        @Override
+//        public void onCompleted() {
+//            Toast.makeText(MainActivity.this,"Complete", Toast.LENGTH_SHORT).show();
+//        }
 //        new Thread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -161,6 +261,29 @@ public class SupportService extends Service implements CatchException {
 
     }
 
+    private void createErrorNotification(Throwable e){
+        Intent notificationIntent = new Intent(SupportService.this,MainActivity.class);
+        PendingIntent pendInt = PendingIntent.getActivity(SupportService.this,0,notificationIntent,0);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.the_new_york);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(SupportService.this,"CHANNEL")
+                .setLargeIcon(bitmap)
+                .setDefaults(Notification.DEFAULT_VIBRATE)
+                .setSmallIcon(R.drawable.ic_error)
+                .setContentTitle("NY Error: " + e.getStackTrace())
+                .setContentText("News can'be update!")
+                .setAutoCancel(true)
+                .setContentIntent(pendInt);
+
+        Notification notification = builder.build();
+
+        NotificationManager  notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(1,notification);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
+            startForeground(1,notification);
+        }
+    }
+
     private void createNotification(){
         Intent activityIntent = new Intent(this,MainActivity.class);
         PendingIntent pendActivity = PendingIntent.getActivity(this,0,activityIntent,0);
@@ -196,11 +319,7 @@ public class SupportService extends Service implements CatchException {
         return argument;
     }
 
-    @Override
-    public boolean getMistake(boolean var) {
-        Toast.makeText(this,"Check",Toast.LENGTH_LONG).show();
-         return var;
-    }
+
 
 
     class UpdateThread extends Thread {
@@ -262,6 +381,49 @@ public class SupportService extends Service implements CatchException {
 
         }
     }
+
+    Observable<List<NewsEntity>> NewsObservabale(final String arg){
+       return Observable.create(new Observable.OnSubscribe<List<NewsEntity>>() {
+           @Override
+           public void call(Subscriber<? super List<NewsEntity>> subscriber) {
+               DAO updateDao = bd.NewsDao();
+               //  listEnt = (ArrayList<NewsEntity>) updateDao.getAll();
+               //   updateDao.delete(listEnt);
+
+               ApiService api = RetrofitClient.getApiService();
+               Call<News> news = api.getItemNews(arg, API_KEY);
+               try {
+                   newsItem = news.execute().body();
+               } catch (IOException e) {
+                   e.printStackTrace();
+                   //  exeption.getMistake(false);
+                   //  throw new RuntimeException("a wrapper exception", e);
+               }
+               try {
+                   // Thread.sleep(1000);
+                   listresult = newsItem.getResults();
+               } catch (NullPointerException e) {
+                   e.printStackTrace();
+               }
+
+               BaseConverter baseConverter = new BaseConverter();
+               listEnt = baseConverter.toDataBase(listresult);
+
+               try {
+                   Thread.sleep(300);
+                   updateDao.deleteAll();
+
+                   updateDao.insert(listEnt);
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+               subscriber.onNext(listEnt);
+               subscriber.onCompleted();
+           }
+       });
+    }
+
+
 
 
 
