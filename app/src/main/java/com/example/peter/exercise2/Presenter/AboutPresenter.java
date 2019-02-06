@@ -3,20 +3,25 @@ package com.example.peter.exercise2.Presenter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.arellomobile.mvp.InjectViewState;
+import com.arellomobile.mvp.MvpPresenter;
 import com.example.peter.exercise2.Data.AboutData;
 import com.example.peter.exercise2.R;
 import com.example.peter.exercise2.View.IAboutView;
+@InjectViewState
+public class AboutPresenter extends MvpPresenter<IAboutView> implements IAboutPresenter {
+ //   IAboutView aboutView;
 
-public class AboutPresenter implements IAboutPresenter {
-    IAboutView aboutView;
-
-    public AboutPresenter(IAboutView aboutView) {
-        this.aboutView = aboutView;
+    public AboutPresenter(/*IAboutView aboutView*/) {
+    //    this.aboutView = aboutView;
     }
+
+
 
     @Override
     public void network(int idView) {
@@ -34,7 +39,8 @@ public class AboutPresenter implements IAboutPresenter {
     }
 
         Intent linkIntent = new Intent(Intent.ACTION_VIEW, adress);
-        aboutView.networks(linkIntent);
+        getViewState().networks(linkIntent);
+       // aboutView.networks(linkIntent);
 
 
     }
@@ -46,7 +52,8 @@ public class AboutPresenter implements IAboutPresenter {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER;
         disclaimer.setLayoutParams(params);
-        aboutView.getView(disclaimer);
+        //aboutView.getView(disclaimer);
+        getViewState().getView(disclaimer);
     }
 
     @Override
@@ -57,9 +64,11 @@ public class AboutPresenter implements IAboutPresenter {
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, message);
         if(data.checkIntent(intent,context)){
-            aboutView.sendMessage(intent);
+          //  aboutView.sendMessage(intent);
+            getViewState().sendMessage(intent);
         } else{
-            aboutView.sendMessageError(R.string.executing);
+          //  aboutView.sendMessageError(R.string.executing);
+            getViewState().sendMessageError(R.string.executing);
         }
     }
 }

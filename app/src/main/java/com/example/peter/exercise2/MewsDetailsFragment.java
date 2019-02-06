@@ -21,6 +21,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.arellomobile.mvp.MvpAppCompatFragment;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.example.peter.exercise2.Presenter.INewsInformPresenter;
 import com.example.peter.exercise2.Presenter.NewsInformPresenter;
 import com.example.peter.exercise2.View.INewsDetailsInfoView;
@@ -28,7 +30,9 @@ import com.example.peter.exercise2.View.INewsDetailsInfoView;
 import static android.app.Activity.RESULT_FIRST_USER;
 import static android.app.Activity.RESULT_OK;
 
-public class MewsDetailsFragment extends Fragment implements Handler.Callback, INewsDetailsInfoView{
+public class MewsDetailsFragment extends MvpAppCompatFragment implements INewsDetailsInfoView{
+    @InjectPresenter
+    NewsInformPresenter newsInformPresenter;
     public final static String Redact_Id = "redact_id";
     public final static String TITLE = "title_n";
     public final static String FUL_NEWS = "full_info";
@@ -50,12 +54,13 @@ public class MewsDetailsFragment extends Fragment implements Handler.Callback, I
     private int id;
     private Toolbar toolbar;
     private CallBackChange callBacker;
-    private INewsInformPresenter newsInformPresenter;
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = App.getInstanceApp().getDatabase();
-        newsInformPresenter = new NewsInformPresenter(this);
+      //  newsInformPresenter = new NewsInformPresenter(this);
     }
 
     @Override
@@ -117,7 +122,7 @@ public class MewsDetailsFragment extends Fragment implements Handler.Callback, I
     }
 
 
-    @Override
+  //  @Override
     public boolean handleMessage(Message message) {
         switch (message.what){
             case 1:

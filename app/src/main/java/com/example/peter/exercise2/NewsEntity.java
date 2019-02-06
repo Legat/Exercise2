@@ -2,6 +2,7 @@ package com.example.peter.exercise2;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 @Entity(tableName = "news")
@@ -20,6 +21,7 @@ public class NewsEntity {
 
     private String url;     // news Url
 
+    @Ignore
     public NewsEntity() {
     }
 

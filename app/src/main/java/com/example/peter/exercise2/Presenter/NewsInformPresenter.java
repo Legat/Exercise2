@@ -1,44 +1,43 @@
 package com.example.peter.exercise2.Presenter;
 
-import android.app.Activity;
 import android.content.Context;
-
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
+import com.arellomobile.mvp.InjectViewState;
+import com.arellomobile.mvp.MvpPresenter;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.peter.exercise2.CallBackChange;
 import com.example.peter.exercise2.Data.INewsInformData;
 import com.example.peter.exercise2.Data.NewsInformData;
-import com.example.peter.exercise2.GlideApp;
-import com.example.peter.exercise2.MewsDetailsFragment;
 import com.example.peter.exercise2.NewsEntity;
-
 import com.example.peter.exercise2.R;
 import com.example.peter.exercise2.View.INewsDetailsInfoView;
 
-public class NewsInformPresenter implements INewsInformPresenter {
-    private INewsDetailsInfoView newsInfoView;
+@InjectViewState
+public class NewsInformPresenter extends MvpPresenter<INewsDetailsInfoView> implements INewsInformPresenter {
+  //  private INewsDetailsInfoView newsInfoView;
     private CallBackChange callBacker;
     private NewsEntity news;
-    public NewsInformPresenter(INewsDetailsInfoView newsInfoView) {
-        this.newsInfoView = newsInfoView;
+    public NewsInformPresenter(/*INewsDetailsInfoView newsInfoView*/) {
+      //  this.newsInfoView = newsInfoView;
     }
 
     @Override
     public void getNews(int id) {
     INewsInformData data = new NewsInformData();
     news = data.getNews(id,1);
-    newsInfoView.getNews(news);
+    getViewState().getNews(news);
+  //  newsInfoView.getNews(news);
     }
 
     @Override
     public void editNews(NewsEntity news) {
-        newsInfoView.getEditNews(news);
+       // newsInfoView.getEditNews(news);
+        getViewState().getEditNews(news);
     }
 
     @Override
@@ -48,7 +47,8 @@ public class NewsInformPresenter implements INewsInformPresenter {
         news.setPublishDate(snews.getPublishDate());
         news.setFulltext(snews.getFulltext());
         data.saveNews(id,3,news);
-        newsInfoView.saveNews(news);
+       // newsInfoView.saveNews(news);
+        getViewState().saveNews(news);
     }
 
     @Override

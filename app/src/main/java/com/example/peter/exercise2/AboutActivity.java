@@ -13,10 +13,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arellomobile.mvp.MvpAppCompatActivity;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.example.peter.exercise2.Presenter.AboutPresenter;
 import com.example.peter.exercise2.View.IAboutView;
 
-public class AboutActivity extends AppCompatActivity implements View.OnClickListener, IAboutView {
+public class AboutActivity extends MvpAppCompatActivity implements View.OnClickListener, IAboutView {
    private static final String FACE_BOOK = "https://www.facebook.com/peter.shnepelev";
    private static final String VK_COM = "https://vk.com/patricul";
    private static final String TELEGRAM = "https://web.telegram.org/#/im?p=@Patricul";
@@ -24,12 +26,14 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
     private ImageButton faceBtn, telBtn, vkBtn;
     private EditText messageEdit;
     private LinearLayout conainer;
-    private AboutPresenter aboutPresenter;
+
+    @InjectPresenter
+     AboutPresenter aboutPresenter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        aboutPresenter = new AboutPresenter(this);
+      //  aboutPresenter = new AboutPresenter(this);
 
         messageEdit = findViewById(R.id.message_edit);
 

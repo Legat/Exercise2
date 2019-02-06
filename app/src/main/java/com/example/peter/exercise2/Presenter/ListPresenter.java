@@ -3,12 +3,14 @@ package com.example.peter.exercise2.Presenter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
+import com.arellomobile.mvp.InjectViewState;
 import com.example.peter.exercise2.Adapters.NewsAdapter;
 import com.example.peter.exercise2.Data.ListData;
 import com.example.peter.exercise2.NewsEntity;
 import com.example.peter.exercise2.View.IListView;
 
 import java.util.List;
+
 
 public class ListPresenter implements IListPresenter {
     private RecyclerView recyclerView;
