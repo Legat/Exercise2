@@ -22,10 +22,10 @@ public class AboutActivity extends MvpAppCompatActivity implements View.OnClickL
    private static final String FACE_BOOK = "https://www.facebook.com/peter.shnepelev";
    private static final String VK_COM = "https://vk.com/patricul";
    private static final String TELEGRAM = "https://web.telegram.org/#/im?p=@Patricul";
-    private Button sendBtn;
-    private ImageButton faceBtn, telBtn, vkBtn;
-    private EditText messageEdit;
-    private LinearLayout conainer;
+   private Button sendBtn;
+   private ImageButton faceBtn, telBtn, vkBtn;
+   private EditText messageEdit;
+   private LinearLayout container;
 
     @InjectPresenter
      AboutPresenter aboutPresenter;
@@ -54,7 +54,7 @@ public class AboutActivity extends MvpAppCompatActivity implements View.OnClickL
         telBtn.setOnClickListener(this);
         vkBtn.setOnClickListener(this);
 
-        conainer = findViewById(R.id.info_container);
+        container = findViewById(R.id.info_container);
         aboutPresenter.addView(this);
 
 //        TextView disclaimer = new TextView(this);
@@ -125,7 +125,7 @@ public class AboutActivity extends MvpAppCompatActivity implements View.OnClickL
 
     @Override
     public void getView(final TextView disclaimer) {
-    conainer.addView(disclaimer);
+    container.addView(disclaimer);
     }
 
     @Override

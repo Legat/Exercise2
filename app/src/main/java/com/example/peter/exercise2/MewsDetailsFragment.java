@@ -1,7 +1,7 @@
 package com.example.peter.exercise2;
 
 import android.content.Context;
-import android.content.Intent;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,12 +23,11 @@ import android.widget.TextView;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.example.peter.exercise2.Presenter.INewsInformPresenter;
+
 import com.example.peter.exercise2.Presenter.NewsInformPresenter;
 import com.example.peter.exercise2.View.INewsDetailsInfoView;
 
-import static android.app.Activity.RESULT_FIRST_USER;
-import static android.app.Activity.RESULT_OK;
+
 
 public class MewsDetailsFragment extends MvpAppCompatFragment implements INewsDetailsInfoView{
     @InjectPresenter
@@ -41,13 +40,13 @@ public class MewsDetailsFragment extends MvpAppCompatFragment implements INewsDe
     private EditText edTitle, edDate, edFulltext;
     private ImageView imageNews;
     // private WebView page;
-    private Handler handler;
+ //   private Handler handler;
     private MenuItem delete, edit, save;
     private ProgressBar progress;
     private LinearLayout detailLay;
     private LinearLayout editLay;
     private NewsEntity news;
-    private DetailThread detaiThread;
+  //  private DetailThread detaiThread;
     private Thread EditThread;
     // private ArrayList<EditText> editList;
     private AppDataBase db;

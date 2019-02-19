@@ -10,22 +10,33 @@ import android.widget.TextView;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.example.peter.exercise2.App;
 import com.example.peter.exercise2.Data.AboutData;
 import com.example.peter.exercise2.R;
 import com.example.peter.exercise2.View.IAboutView;
+
+import javax.inject.Inject;
+
 @InjectViewState
 public class AboutPresenter extends MvpPresenter<IAboutView> implements IAboutPresenter {
  //   IAboutView aboutView;
 
+
+    @Inject
+    AboutData data;
+
     public AboutPresenter(/*IAboutView aboutView*/) {
-    //    this.aboutView = aboutView;
+        //  this.data= aboutView;
+      //  App.getAboutDataComponent().inject(this);
+
     }
 
 
 
     @Override
     public void network(int idView) {
-        AboutData data = new AboutData();
+        App.getInstanceApp().getAboutComponent().inject(this);
+         data = new AboutData();
         Uri adress = Uri.parse(data.getTelegram());
 
     switch(idView){
@@ -33,7 +44,7 @@ public class AboutPresenter extends MvpPresenter<IAboutView> implements IAboutPr
           adress = Uri.parse(data.getFace());
             break;
         case 2:
-           adress = Uri.parse(data.getVk());
+          adress = Uri.parse(data.getVk());
             break;
 
     }
@@ -58,7 +69,7 @@ public class AboutPresenter extends MvpPresenter<IAboutView> implements IAboutPr
 
     @Override
     public void sendMessage(String message, Context context) {
-        AboutData data = new AboutData();
+         data = new AboutData();
         Intent intent = new Intent();
         intent.setType("text/plain");
         intent.setAction(Intent.ACTION_SEND);

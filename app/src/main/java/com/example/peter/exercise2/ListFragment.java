@@ -57,6 +57,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 
 public class ListFragment extends Fragment implements IListView,Handler.Callback {
@@ -83,7 +85,6 @@ public class ListFragment extends Fragment implements IListView,Handler.Callback
     private String param;
     private RadioButton radioButton;
     private AlertDialog dialog;
-    private SharedPreferences prefer;
     private ArrayList<NewsEntity> listEnt;
     private AppDataBase db;
   //  private FrameLayout progressFrame;
@@ -91,15 +92,18 @@ public class ListFragment extends Fragment implements IListView,Handler.Callback
     private Toolbar toolbar;
     private AppCompatActivity appCompatActivity;
     private IListPresenter listPresenter;
+
+    private SharedPreferences prefer;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
        // setHasOptionsMenu(true);
         setRetainInstance(true);
+      //  App.getPersistancyComponent().inject(this);
         prefer = App.getInstanceApp().getPreference();
         db = App.getInstanceApp().getDatabase();
         listPresenter = new ListPresenter(this);
-        if(param == null || param == ""){
+        if(param == null || param.equals("")){
             param = "home.json";
         }
     }
@@ -284,12 +288,12 @@ public class ListFragment extends Fragment implements IListView,Handler.Callback
             radioGroup.setLayoutParams(lineraParams);
             scroll.addView(radioGroup);
 
-            for(int i = 0; i< selection.length; i++){
+            for (String aSelection : selection) {
                 radioButton = new RadioButton(getContext());
                 LinearLayout.LayoutParams checkParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 radioButton.setLayoutParams(checkParams);
-                radioButton.setText(selection[i].toString());
-                radioButton.setPadding((int) (10*dp),0,0,0);
+                radioButton.setText(aSelection);
+                radioButton.setPadding((int) (10 * dp), 0, 0, 0);
                 radioButton.setTextSize(6 * getResources().getDisplayMetrics().density);
                 radioGroup.addView(radioButton);
 
@@ -297,7 +301,7 @@ public class ListFragment extends Fragment implements IListView,Handler.Callback
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                         String title = compoundButton.getText().toString();
-                       // ActionBar ab = getSupportActionBar();
+                        // ActionBar ab = getSupportActionBar();
                         toolbar.setSubtitle(title);
 
                         SharedPreferences.Editor editor = prefer.edit();
@@ -311,7 +315,7 @@ public class ListFragment extends Fragment implements IListView,Handler.Callback
 //                        newsTread = new NewsThread(handler, param);
 //                        newsTread.start();
 
-                         listPresenter.filterList(getActivity(), param);
+                        listPresenter.filterList(getActivity(), param);
 
                     }
                 });
@@ -463,8 +467,8 @@ public class ListFragment extends Fragment implements IListView,Handler.Callback
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
         //int heigth = metrics.heightPixels;
-        float dp =  width/metrics.scaledDensity;
-        return dp;
+        return width/metrics.scaledDensity;
+
 
     }
 
